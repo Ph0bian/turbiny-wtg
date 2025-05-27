@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Wyszukiwarka Turbin</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: url('https://www.reuters.com/resizer/v2/ABZ3AWRFTNBYRBXCYVHVNFDYIA.JPG?auth=bc488129d646eba71d64f4b2b43c54573d5ecf2015a27bac0f4b0e944a365264&width=1080&quality=80') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .overlay {
+      height: 100%;
+      width: 100%;
+      backdrop-filter: blur(6px);
+      background-color: rgba(255, 255, 255, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-box {
+      background: rgba(255, 255, 255, 0.75);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    input {
+      padding: 10px;
+      font-size: 18px;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="search-box">
+      <h2>NR WTG:</h2>
+      <input type="text" id="unitInput" placeholder="np. 13460" onkeydown="if(event.key==='Enter') findCoords()">
+      <button onclick="findCoords()">Szukaj</button>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script>
+    let coordData = {};
+
+    async function loadData() {
+      const response = await fetch('unit_coordinates.json');
+      coordData = await response.json();
+    }
+
+    function findCoords() {
+      const unitId = document.getElementById('unitInput').value;
+      const result = document.getElementById('result');
+
+      if(coordData[unitId]) {
+        const [lat, lon] = coordData[unitId];
+        const gmapLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+        window.open(gmapLink, '_blank');
+        result.innerHTML = `Przeniesiono do Google Maps: <br>${lat}, ${lon}`;
+      } else {
+        result.innerHTML = "Nie znaleziono turbiny o tym UnitID.";
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
